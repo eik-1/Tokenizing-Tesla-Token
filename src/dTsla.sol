@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity ^0.8.25;
 
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
@@ -258,5 +258,35 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
         bytes32 requestId
     ) external view returns (dTslaRequest memory) {
         return s_requestIdToRequest[requestId];
+    }
+
+    function getPendingWithdrawalAmount(
+        address user
+    ) external view returns (uint256) {
+        return s_userToWithdrawalAmount[user];
+    }
+
+    function getPortfolioBalance() external view returns (uint256) {
+        return s_portfolioBalance;
+    }
+
+    function getSubId() external view returns (uint64) {
+        return i_subId;
+    }
+
+    function getMintSourceCode() external view returns (string memory) {
+        return s_mintSourceCode;
+    }
+
+    function getRedeemSourceCode() external view returns (string memory) {
+        return s_redeemSourceCode;
+    }
+
+    function getCollateralRatio() external pure returns (uint256) {
+        return COLLATERAL_RATIO;
+    }
+
+    function getCollateralPrecision() external pure returns (uint256) {
+        return COLLATERAL_PRECISION;
     }
 }

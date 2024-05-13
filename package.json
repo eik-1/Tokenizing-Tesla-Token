@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "simulate": "bash -c 'source .env && node ./functions/simulators/alpacaMintSimulator.js'",
+    "secrets": "bash -c 'source .env && node ./functions/uploadSecrets.js'",
+    "redeem": "bash -c 'source .env && node ./functions/simulators/alpacaRedeemSimulator.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

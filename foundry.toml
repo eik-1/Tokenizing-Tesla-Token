@@ -10,5 +10,7 @@ remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
 ]
 fs_permissions = [{ access = "read", path = "./" }]
+[etherscan]
+polygon-amoy = { key = "${AMOY_API_KEY}", url = "https://www.oklink.com/api/explorer/v1/api/verifyContract" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

@@ -3,8 +3,8 @@ const ethers = require("ethers");
 
 const uploadSecrets = async () => {
   // hardcoded for Sepolia
-  const routerAddress = "0xb83E47C2bC239B3bf370bc41e1459A34b41238D0";
-  const donId = "fun-ethereum-sepolia-1";
+  const routerAddress = "0xC22a79eBA640940ABB6dF0f7982cc119578E11De";
+  const donId = "fun-polygon-amoy-1";
   const gatewayUrls = [
     "https://01.functions-gateway.testnet.chain.link/",
     "https://02.functions-gateway.testnet.chain.link/",
@@ -17,7 +17,7 @@ const uploadSecrets = async () => {
       "private key not provided - check your environment variables"
     );
 
-  const rpcUrl = process.env.SEPOLIA_RPC_URL;
+  const rpcUrl = process.env.POLYGON_RPC_URL;
 
   if (!rpcUrl)
     throw new Error(`rpcUrl not provided  - check your environment variables`);

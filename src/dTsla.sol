@@ -33,18 +33,18 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
     uint256 constant COLLATERAL_PRECISION = 100;
     uint256 constant MIN_WITHDRAWAL_AMOUNT = 100e18; //USDC has 6 decimals
 
-    address constant SEPOLIA_FUNCTIONS_ROUTER =
-        0xb83E47C2bC239B3bf370bc41e1459A34b41238D0;
+    address constant POLYGON_FUNCTIONS_ROUTER =
+        0xC22a79eBA640940ABB6dF0f7982cc119578E11De;
     address constant TSLA_PRICE_FEED =
-        0xc59E3633BAAC79493d908e63626716e204A45EdF; //LINK -> USD for demo purposes
+        0xc2e2848e28B9fE430Ab44F55a8437a33802a219C; //LINK -> USD for demo purposes
     address constant USDC_PRICE_FEED =
-        0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E;
-    address constant SEPOLIA_USDC = 0x8CFFE6ad2B9A61cf13905A7Cd070FA8ad5AE799D;
+        0x1b8739bB4CdF0089d07097A9Ae5Bd274b29C6F16;
+    address constant POLYGON_USDC = 0xB0A10ea7d276b75f73Ee9f3a931b2396DfB17b8D;
     uint256 constant COLLATERAL_RATIO = 200; //If $200 of TSLA in brokerage, we can mint atmost $100 worth of dTsla
 
     //Arguments for requestId
     bytes32 constant DON_ID =
-        hex"66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000";
+        hex"66756e2d706f6c79676f6e2d616d6f792d310000000000000000000000000000";
     uint32 constant GAS_LIMIT = 300_000;
     uint64 immutable i_subId;
 
@@ -64,7 +64,7 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
         string memory redeemSourceCode
     )
         ConfirmedOwner(msg.sender)
-        FunctionsClient(0xb83E47C2bC239B3bf370bc41e1459A34b41238D0)
+        FunctionsClient(POLYGON_FUNCTIONS_ROUTER)
         ERC20("dTsla", "dTsla")
     {
         s_mintSourceCode = mintSourceCode;
@@ -186,8 +186,10 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
     function withdraw() external {
         uint256 amountToWithdraw = s_userToWithdrawalAmount[msg.sender];
         s_userToWithdrawalAmount[msg.sender] = 0;
-        bool success = ERC20(0x8CFFE6ad2B9A61cf13905A7Cd070FA8ad5AE799D)
-            .transfer(msg.sender, amountToWithdraw);
+        bool success = ERC20(POLYGON_USDC).transfer(
+            msg.sender,
+            amountToWithdraw
+        );
         if (!success) {
             revert dTsla__TransferFailed();
         }

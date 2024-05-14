@@ -10,7 +10,7 @@ contract DeployDTsla is Script {
     string constant alpacaMintSource = "./functions/sources/alpacaBalance.js";
     string constant alpacaRedeemSource =
         "./functions/sources/sellTslaAndSendUsdc.js";
-    uint64 constant subId = 2670;
+    uint64 constant subId = 194;
 
     function run() public {
         string memory mintSource = vm.readFile(alpacaMintSource);

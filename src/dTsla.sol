@@ -52,10 +52,14 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
     string private s_mintSourceCode;
     string private s_redeemSourceCode;
     uint256 private s_portfolioBalance;
+    bytes32 private s_mostRecentRequestId;
     mapping(bytes32 requestId => dTslaRequest request)
         private s_requestIdToRequest;
     mapping(address user => uint256 pendingWithdrawlAmount)
         private s_userToWithdrawalAmount;
+
+    uint8 donHostedSecretsSlotID = 0;
+    uint64 donHostedSecretsVersion = 1715783544;
 
     /*------------------FUNCTIONS----------------------*/
     constructor(
@@ -83,12 +87,17 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
     ) external onlyOwner returns (bytes32) {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(s_mintSourceCode);
+        req.addDONHostedSecrets(
+            donHostedSecretsSlotID,
+            donHostedSecretsVersion
+        );
         bytes32 requestId = _sendRequest(
             req.encodeCBOR(),
             i_subId,
             GAS_LIMIT,
             DON_ID
         );
+        s_mostRecentRequestId = requestId;
         s_requestIdToRequest[requestId] = dTslaRequest(
             amount,
             msg.sender,
@@ -157,6 +166,7 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
             msg.sender,
             MintOrRedeem.mint
         );
+        s_mostRecentRequestId = requestId;
 
         _burn(msg.sender, amountdTsla);
     }
@@ -200,11 +210,28 @@ contract dTsla is ConfirmedOwner, FunctionsClient, ERC20 {
         bytes memory response,
         bytes memory /*err*/
     ) internal override {
-        if (s_requestIdToRequest[requestId].mintOrRedeem == MintOrRedeem.mint) {
-            _mintFulfillRequest(requestId, response);
-        } else {
-            _redeemFulfillRequest(requestId, response);
+        // if (s_requestIdToRequest[requestId].mintOrRedeem == MintOrRedeem.mint) {
+        //     _mintFulfillRequest(requestId, response);
+        // } else {
+        //     _redeemFulfillRequest(requestId, response);
+        // }
+        s_portfolioBalance = uint256(bytes32(response));
+    }
+
+    function finishMint() external onlyOwner {
+        uint256 amountOfTokensToMint = s_requestIdToRequest[
+            s_mostRecentRequestId
+        ].amountOfToken;
+        if (
+            _getCollateralRatioAdjustedTotalBalance(amountOfTokensToMint) >
+            s_portfolioBalance
+        ) {
+            revert dTsla__NotEnoughCollateral();
         }
+        _mint(
+            s_requestIdToRequest[s_mostRecentRequestId].requester,
+            amountOfTokensToMint
+        );
     }
 
     function _getCollateralRatioAdjustedTotalBalance(
